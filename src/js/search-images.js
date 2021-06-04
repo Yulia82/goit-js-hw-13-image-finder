@@ -1,20 +1,14 @@
 import APIServices from './apiService'
 import refs from './refs'
-
 import renderGallery from '../templates/gallery-images.hbs'
-// import debounce from 'lodash.debounce'
-
-// import * as basicLightbox from 'basiclightbox'
-// import 'basiclightbox/dist/basicLightbox.min.css';
 import lightbox from './lightbox'
-
-// import { inform, errorInfo } from './pnotify'
+import { inform } from './pnotify'
+import { errorInfo } from './pnotify'
+// import debounce from 'lodash.debounce'
 
 
 const getImgUserRequest = new APIServices();
 
-// refs.formInput.addEventListener('input', debounce(onSearch, 500));
-// refs.btnSearch.addEventListener('click', onSearch);
 refs.btnLoadMore.addEventListener('click', onBtnLoadMore);
 refs.galleryImg.addEventListener('click', onImgCard);
 refs.formSearch.addEventListener('submit', onSearch);
@@ -28,18 +22,15 @@ function onImgCard(evt) {
     const largeImg = evt.target.dataset.srclarge;
 
     lightbox(largeImg);
-}
+};
 
 function onSearch(evt) {
     evt.preventDefault();
-    // getImgUserRequest.searchImg = evt.target.value;
+
     getImgUserRequest.searchImg = evt.currentTarget.elements.query.value;
-    // console.log(getImgUserRequest.searchImg);
-    // console.log(getImgUserRequest.searchImg.trim().length);
     
     if (getImgUserRequest.searchImg == '' || (getImgUserRequest.searchImg.trim().length === 0)) {
-        console.log('Введите корректный запрос');
-        // inform('Enter the correct query');
+        inform('Enter the correct query');
         return;
     };
     
@@ -57,12 +48,11 @@ function fetchImg() {
 
     getImgUserRequest.getImage().then((images) => {
         if (images.length === 0) {
-            alert(nothing);
+            inform('Nothing found on your request');
             return;
         };
 
         imagesOutput(images);
-        // console.log(typeof(getImgUserRequest.perPage));
 
         if (images.length < getImgUserRequest.perPage) {
             refs.btnLoadMore.classList.add('is-hidden');;
@@ -72,14 +62,14 @@ function fetchImg() {
         };
 
 
-    }).catch(error => alert(error));
+    }).catch(error => errorInfo(error));
 };
 
 // рисование фото на экране
 function imagesOutput(images) {
     refs.galleryImg.insertAdjacentHTML('beforeend', renderGallery(images));
 
-}
+};
 
 function onBtnLoadMore() {
     fetchImg();
