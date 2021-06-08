@@ -29,7 +29,7 @@ function onSearch(evt) {
 
     getImgUserRequest.searchImg = evt.currentTarget.elements.query.value;
     
-    if (getImgUserRequest.searchImg == '' || (getImgUserRequest.searchImg.trim().length === 0)) {
+    if (getImgUserRequest.searchImg.trim().length === 0) {
         inform('Enter the correct query');
         return;
     };
@@ -48,41 +48,41 @@ function fetchImg() {
 
     getImgUserRequest.getImage().then((images) => {
         if (images.length === 0) {
+            refs.btnLoadMore.classList.add('is-hidden');
             inform('Nothing found on your request');
             return;
         };
 
         imagesOutput(images);
-
+        if (getImgUserRequest.currentPage > 2) {
+            console.log(getImgUserRequest.currentPage);
+            scroll();
+        }
+        
         if (images.length < getImgUserRequest.perPage) {
-            refs.btnLoadMore.classList.add('is-hidden');;
+            refs.btnLoadMore.classList.add('is-hidden');
         } else {  
             refs.btnLoadMore.removeAttribute("disabled");
             refs.btnLoadMore.textContent = 'Load more' 
         };
-
-
     }).catch(error => errorInfo(error));
 };
+
 
 // рисование фото на экране
 function imagesOutput(images) {
     refs.galleryImg.insertAdjacentHTML('beforeend', renderGallery(images));
-
 };
 
 function onBtnLoadMore() {
     fetchImg();
-    scroll();
 };
 
 function scroll() {
-    setTimeout(() => {
         refs.btnLoadMore.scrollIntoView({
         behavior: 'smooth',
         block: 'end',
         });
-    }, 200)
 };
 
 
